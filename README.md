@@ -1,1 +1,2 @@
-Teste de Git
+Teste de Git 
+Documentação do Branch MASTER
