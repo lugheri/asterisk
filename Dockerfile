@@ -20,3 +20,6 @@ RUN make && make install && make config && make samples
 EXPOSE 5060/udp 4569/udp
 
 ENTRYPOINT ["/bin/bash","-c","asterisk -f"]
+
+
+TESTE
