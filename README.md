@@ -1,1 +1,1 @@
-Documentação do Branch MASTER
+Configuração de implantação de central Asterisk 16 com mysql no Kubernetes 
