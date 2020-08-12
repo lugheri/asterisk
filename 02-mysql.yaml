@@ -1,0 +1,71 @@
+kind: Service
+apiVersion: v1
+metadata: 
+    name: mysql
+    namespace: teste04
+    labels: 
+        app: central
+spec:
+    ports:
+      - port: 3306
+    selector:
+        app: central
+        tier: mysql
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+    name: mysql-pv-claim
+    namespace: teste04
+    labels:
+        app: central
+spec: 
+    accessModes: 
+      - ReadWriteOnce
+    resources:
+        requests:
+            storage: 5Gi
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+    name: mysql
+    namespace: teste04
+    labels: 
+        app: central
+spec:
+    selector: 
+        matchLabels:
+            app: central
+            tier: mysql
+    strategy:
+        type: Recreate
+    template:
+        metadata: 
+            labels: 
+                app: central
+                tier: mysql
+        spec: 
+            volumes:
+              - name: mysql-persistent-storage
+                persistentVolumeClaim:
+                    claimName: mysql-pv-claim
+            containers: 
+              - image: mysql:5.6
+                name: mysql
+                env:
+                  - name: MYSQL_ROOT_PASSWORD
+                    value: 1234abc@
+                livenessProbe: 
+                  tcpSocket:
+                    port: 3306
+                ports: 
+                  - containerPort: 3306
+                    name: mysql
+                volumeMounts:
+                  - name: mysql-persistent-storage
+                    mountPath: /var/lib/mysql

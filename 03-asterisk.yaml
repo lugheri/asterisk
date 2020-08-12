@@ -1,0 +1,60 @@
+kind: Service
+apiVersion: v1
+metadata:
+    name: asterisk
+    namespace: teste04
+    labels: 
+        app: central
+        tier: asterisk16
+spec:
+    ports: 
+        - name: sip
+          protocol: UDP
+          port: 5060
+          targetPort: 5060
+    selector: 
+        app: central
+        tier: asterisk16
+
+---
+
+
+kind: Deployment
+apiVersion: apps/v1
+metadata: 
+    name: asterisk
+    namespace: teste04
+    labels: 
+        app: central
+spec: 
+    selector: 
+        matchLabels:
+            app: central
+            tier: asterisk16
+    template: 
+        metadata:
+            labels:
+                app: central
+                tier: asterisk16
+        spec:
+            volumes:
+              - name: config-asterisk
+                secret:
+                    secretName: config-asterisk
+            containers:
+              - name: asterisk
+                image: lugheri/asterisk:16  
+                env:
+                  - name: DB_HOST
+                    value: mysql
+                  - name: MYSQL_ROOT_PASSWORD
+                    value: 1234abc@
+                volumeMounts:
+                    - name: config-asterisk
+                      mountPath: /etc/asterisk
+                ports:
+                    - containerPort: 5060
+                      protocol: UDP
+                    - containerPort: 4569
+                      protocol: UDP
+                    - containerPort: 8088
